@@ -297,7 +297,7 @@ class TokenizerTrainer(ABC):
     def __init__(self, tokenizer_name: str) -> None:
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
 
-    def train(self, data_dir: str, batch_size: int, vocab_size: int, save: bool, save_fp: str) -> None:
+    def train(self, data_dir: str, batch_size: int, vocab_size: int, save_fp: str) -> None:
         """
         Train the tokenizer on a new corpus.
 
@@ -305,14 +305,12 @@ class TokenizerTrainer(ABC):
             data_dir (str): Corpus directory path.
             batch_size (int): Batch size for reading files.
             vocab_size (int): Target vocabulary size.
-            save (bool): Whether to save the adapted tokenizer.
             save_fp (str): File path to save the tokenizer.
 
         """
         training_corpus = self.read_batch_of_files(data_dir, batch_size)
         self.tokenizer = self.tokenizer.train_new_from_iterator(training_corpus, vocab_size)
-        if save:
-            self.save(save_fp)
+        self.save(save_fp)
 
     def read_batch_of_files(self, data_dir: str, batch_size: int) -> Iterator[List[str]]:
         """
@@ -390,19 +388,21 @@ class WordPieceTrainer(TokenizerTrainer):
     """
     def get_filenames(self, data_dir: str) -> List[str]:
         """
-        Get a list of filenames in a directory.
+        Retrieves a list of filenames from the 'neg' and 'pos' directories within the 'train' and 'test' directories.
 
         Args:
-            data_dir (str): Directory path.
+            data_dir (str): The top-level directory containing the data files.
 
         Returns:
-            list: List of filenames.
-
+            list: List of file paths.
         """
         filenames = []
+
         for root, dirs, files in os.walk(data_dir):
-            for file in files:
-                filenames.append(os.path.join(root, file))
+            if os.path.basename(root) in ['neg', 'pos'] and os.path.basename(os.path.dirname(root)) in ['train', 'test']:
+                for file in files:
+                    filepath = os.path.join(root, file)
+                    filenames.append(filepath)
         return filenames
 
     def read_file(self, filename: str) -> str:
@@ -421,24 +421,16 @@ class WordPieceTrainer(TokenizerTrainer):
         return content
 
 def main():
-    parser = argparse.ArgumentParser(description="Tokenizer Training Script")
-    parser.add_argument("--tokenizer_name", type=str, default="bert-base-cased", help="Name of the pretrained tokenizer.")
-    parser.add_argument("--data_dir", type=str, default="aclImdb", help="Directory containing the training data.")
-    parser.add_argument("--batch_size", type=int, default=1000, help="Batch size for reading files.")
-    parser.add_argument("--vocab_size", type=int, default=30522, help="Target vocabulary size.")
-    parser.add_argument("--save", action="store_true", help="Whether to save the adapted tokenizer.")
-    parser.add_argument("--save_fp", type=str, default="tokenizer/adapted-tokenizer", help="File path to save the tokenizer.")
-
-    args = parser.parse_args()
-
-    wp_trainer = WordPieceTrainer(tokenizer_name=args.tokenizer_name)
-    wp_trainer.train(data_dir=args.data_dir, batch_size=args.batch_size, vocab_size=args.vocab_size, save=args.save, save_fp=args.save_fp)
+  tokenizer_name = "bert-base-cased"
+  data_dir = "aclImdb"
+  batch_size = 1000
+  vocab_size = 30522
+  save_fp = "tokenizer/adapted-tokenizer"
+  wp_trainer = WordPieceTrainer(tokenizer_name=tokenizer_name)
+  wp_trainer.train(data_dir=data_dir, batch_size=batch_size, vocab_size=vocab_size, save_fp=save_fp)
 
 if __name__ == "__main__":
     main()
-
-# python word_piece_trainer.py --tokenizer_name bert-base-cased --data_dir aclImdb --batch_size 1000 --vocab_size 30522 --save --save_fp tokenizer/adapted-tokenizer
-
 ```
 
 #### Tokenizer
@@ -799,17 +791,17 @@ class CustomTextDataset(Dataset):
             sent_A, label_A = self.mask_sentence(sent_A)
             sent_B, label_B = self.mask_sentence(sent_B)
 
-            bert_label = ([PAD_TOKEN] + label_A + [PAD_TOKEN] + label_B) + [PAD_TOKEN]
+            bert_label = ([CustomTextDataset.PAD_TOKEN] + label_A + [CustomTextDataset.PAD_TOKEN] + label_B) + [CustomTextDataset.PAD_TOKEN]
 
-            sent_A = [CLS_TOKEN] + sent_A + [SEP_TOKEN]
-            sent_B = sent_B + [SEP_TOKEN]
+            sent_A = [CustomTextDataset.CLS_TOKEN] + sent_A + [CustomTextDataset.SEP_TOKEN]
+            sent_B = sent_B + [CustomTextDataset.SEP_TOKEN]
 
             segment_label = [1 for _ in range(len(sent_A))] + [2 for _ in range(len(sent_B))]
 
             sequence = sent_A + sent_B
 
-            padding = [PAD_TOKEN for _ in range(self.seq_len - len(sequence))]
-            sequence.extend(padding), bert_label.extend(padding), segment_label.extend([PAD_IDX] * len(padding))
+            padding = [CustomTextDataset.PAD_TOKEN for _ in range(self.seq_len - len(sequence))]
+            sequence.extend(padding), bert_label.extend(padding), segment_label.extend([CustomTextDataset.PAD_IDX] * len(padding))
 
             bert_input = self.tokenizer.convert_to_ids(sequence)
             bert_label = self.tokenizer.convert_to_ids(bert_label)
@@ -896,7 +888,7 @@ class CustomTextDataset(Dataset):
         num_masked = ceil(self.prop * len(tokens))
         masked_indices = rd.sample(range(len(tokens)), num_masked)
 
-        target_sequence = [PAD_TOKEN] * len(tokens)
+        target_sequence = [CustomTextDataset.PAD_TOKEN] * len(tokens)
 
         for idx in masked_indices:
             target_sequence[idx] = tokens[idx]
@@ -904,11 +896,11 @@ class CustomTextDataset(Dataset):
             p = rd.random()
 
             if p < 0.8:
-                tokens[idx] = MASK_TOKEN
+                tokens[idx] = CustomTextDataset.MASK_TOKEN
 
                 next_idx = idx + 1
                 while next_idx < len(tokens) and tokens[next_idx].startswith("##"):
-                    tokens[next_idx] = MASK_TOKEN
+                    tokens[next_idx] = CustomTextDataset.MASK_TOKEN
                     target_sequence[next_idx] = tokens[next_idx]
                     next_idx += 1
             elif p <= 0.5:
@@ -957,6 +949,7 @@ class CustomTextDataset(Dataset):
         """Resets the buffer index and refills the buffer for the next iteration."""
         self.buffer_idx = 0
         self.fetch_to_buffer()
+
 ```
 
 ## BERT Bulding Blocks
