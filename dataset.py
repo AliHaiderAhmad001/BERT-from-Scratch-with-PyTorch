@@ -11,21 +11,44 @@ class CustomTextDataset(Dataset):
     Custom PyTorch Dataset for BERT-style pre-training on text data.
 
     Args:
-        config (object): Configuration object with dataset parameters.
+        config (Config): Configuration object with dataset parameters.
+
+    Attributes:
+        MASK_TOKEN (str): Special token representing a masked word.
+        PAD_TOKEN (str): Special token for padding sequences.
+        CLS_TOKEN (str): Special token marking the start of a sequence.
+        SEP_TOKEN (str): Special token marking the separation of segments.
+        PAD_IDX (int): Index of the padding token in the vocabulary.
+        prop (float): Proportion of tokens to mask in each sentence.
+        tokenizer_path (str): Path to the pre-trained tokenizer.
+        seq_len (int): Maximum sequence length.
+        shuffle (bool): Flag indicating whether to shuffle the dataset.
+        buffer_idx (int): Index for the current position in the buffer.
+        buffer (List[Dict[str, List[int]]]): Buffer for storing samples.
+        ptr (int): Pointer for the current position when fetching from the buffer.
+        max_words (int): Maximum number of words in one sentence.
+        delimiters (str): Punctuation marks for sentence splitting.
+        lower_case (bool): Flag indicating whether to convert sentences to lowercase.
+        buffer_size (int): Size of the buffer for fetching samples.
+        data_dir (str): Directory containing data files.
+        filenames (List[str]): List of file paths.
+        tokenizer (EnglishDataTokenizer): Instance of the EnglishDataTokenizer.
+        bert_vocab (List[str]): Vocabulary list for BERT model.
     """
+    MASK_TOKEN = '[MASK]'
+    PAD_TOKEN = '[PAD]'
+    CLS_TOKEN = '[CLS]'
+    SEP_TOKEN = '[SEP]'
+    PAD_IDX = 0
 
     def __init__(self, config: Config):
         """
         Initialize the CustomTextDataset.
 
         Args:
-            config (object): Configuration object with dataset parameters.
+            config (Config): Configuration object with dataset parameters.
         """
-        self.MASK_TOKEN = '[MASK]'
-        self.PAD_TOKEN = '[PAD]'
-        self.CLS_TOKEN = '[CLS]'
-        self.SEP_TOKEN = '[SEP]'
-        self.PAD_IDX = 0
+
         self.prop = config.prop
         self.tokenizer_path = config.tokenizer_path
         self.seq_len = config.seq_len
@@ -131,17 +154,17 @@ class CustomTextDataset(Dataset):
             sent_A, label_A = self.mask_sentence(sent_A)
             sent_B, label_B = self.mask_sentence(sent_B)
 
-            bert_label = ([self.PAD_TOKEN] + label_A + [self.PAD_TOKEN] + label_B) + [self.PAD_TOKEN]
+            bert_label = ([PAD_TOKEN] + label_A + [PAD_TOKEN] + label_B) + [PAD_TOKEN]
 
-            sent_A = [self.CLS_TOKEN] + sent_A + [self.SEP_TOKEN]
-            sent_B = sent_B + [self.SEP_TOKEN]
+            sent_A = [CLS_TOKEN] + sent_A + [SEP_TOKEN]
+            sent_B = sent_B + [SEP_TOKEN]
 
             segment_label = [1 for _ in range(len(sent_A))] + [2 for _ in range(len(sent_B))]
 
             sequence = sent_A + sent_B
 
-            padding = [self.PAD_TOKEN for _ in range(self.seq_len - len(sequence))]
-            sequence.extend(padding), bert_label.extend(padding), segment_label.extend([self.PAD_IDX] * len(padding))
+            padding = [PAD_TOKEN for _ in range(self.seq_len - len(sequence))]
+            sequence.extend(padding), bert_label.extend(padding), segment_label.extend([PAD_IDX] * len(padding))
 
             bert_input = self.tokenizer.convert_to_ids(sequence)
             bert_label = self.tokenizer.convert_to_ids(bert_label)
@@ -228,7 +251,7 @@ class CustomTextDataset(Dataset):
         num_masked = ceil(self.prop * len(tokens))
         masked_indices = rd.sample(range(len(tokens)), num_masked)
 
-        target_sequence = [self.PAD_TOKEN] * len(tokens)
+        target_sequence = [PAD_TOKEN] * len(tokens)
 
         for idx in masked_indices:
             target_sequence[idx] = tokens[idx]
@@ -236,11 +259,11 @@ class CustomTextDataset(Dataset):
             p = rd.random()
 
             if p < 0.8:
-                tokens[idx] = self.MASK_TOKEN
+                tokens[idx] = MASK_TOKEN
 
                 next_idx = idx + 1
                 while next_idx < len(tokens) and tokens[next_idx].startswith("##"):
-                    tokens[next_idx] = self.MASK_TOKEN
+                    tokens[next_idx] = MASK_TOKEN
                     target_sequence[next_idx] = tokens[next_idx]
                     next_idx += 1
             elif p <= 0.5:
@@ -289,4 +312,3 @@ class CustomTextDataset(Dataset):
         """Resets the buffer index and refills the buffer for the next iteration."""
         self.buffer_idx = 0
         self.fetch_to_buffer()
-
