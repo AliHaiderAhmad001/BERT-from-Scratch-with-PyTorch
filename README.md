@@ -5,6 +5,7 @@ BERT, which stands for "Bidirectional Encoder Representations from Transformers,
 
 ---
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.1-red.svg)](https://pytorch.org/)
 ![Transformers](https://img.shields.io/badge/transformers-4.36-yellow.svg)
 [![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
@@ -40,11 +41,8 @@ So, let the games begin...
 
 To get started with building BERT from scratch, you must have a comprehensive understanding of transformers (this is very essential in my view). The good news is that I previously built this model from scratch with full explanations you can find [here](https://github.com/AliHaiderAhmad001/Neural-Machine-Translator/blob/main/README.md).
 
-## Requirements
-
-## Project Structure
-
 ## Documentation
+You can read the full explanation of all components in [Demo](https://github.com/AliHaiderAhmad001/BERT-from-Scratch-with-PyTorch/tree/main/demo).
 
 ## Usage
 
@@ -62,6 +60,7 @@ If you find some bug or typo, please let me know or fix it and push it to be ana
 
 ## Acknowledgements
 
+This project was inspired by the work of [Junseong Kim](https://github.com/codertimo/BERT-pytorch/commits?author=codertimo) on [BERT-pytorch](https://github.com/codertimo/BERT-pytorch).
 
 ## License
 
