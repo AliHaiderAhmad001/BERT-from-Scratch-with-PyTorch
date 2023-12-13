@@ -1,9 +1,15 @@
-# BERTvolution-Building-BERT-from-Scratch
+# BERT-from-Scratch-with-PyTorch 
 
 BERT, which stands for "Bidirectional Encoder Representations from Transformers," is a groundbreaking natural language processing (NLP) model that has had a profound impact on a wide range of NLP tasks. It was introduced by researchers at Google AI in their paper titled "[BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/pdf/1810.04805.pdf)" in 2018.
 
 
 ---
+
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.1-red.svg)](https://pytorch.org/)
+![Transformers](https://img.shields.io/badge/transformers-required-yellow.svg)
+[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
+
+
 ## Project Overview
 
 Welcome to "BERTvolution-Building-BERT-from-Scratch"! This project is an ambitious endeavor to create a BERT model from scratch using PyTorch. My goal is to provide an in-depth and comprehensive resource that helps enthusiasts, researchers, and learners gain a precise understanding of BERT, from its fundamental concepts to the implementation details.
