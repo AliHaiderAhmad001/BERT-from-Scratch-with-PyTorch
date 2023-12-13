@@ -60,7 +60,9 @@ If you find some bug or typo, please let me know or fix it and push it to be ana
 
 ## Acknowledgements
 
-This project was inspired by the work of [Junseong Kim](https://github.com/codertimo/BERT-pytorch/commits?author=codertimo) on [BERT-pytorch](https://github.com/codertimo/BERT-pytorch).
+This project was inspired by the works of:
+* [jacobdevlin](https://github.com/jacobdevlin-google) on [bert](https://github.com/google-research/bert).
+* [Junseong Kim](https://github.com/codertimo/BERT-pytorch/commits?author=codertimo) on [BERT-pytorch](https://github.com/codertimo/BERT-pytorch).
 
 ## License
 
