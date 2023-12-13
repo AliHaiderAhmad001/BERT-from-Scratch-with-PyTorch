@@ -6,7 +6,7 @@ BERT, which stands for "Bidirectional Encoder Representations from Transformers,
 ---
 
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.1-red.svg)](https://pytorch.org/)
-![Transformers](https://img.shields.io/badge/transformers-required-yellow.svg)
+![Transformers](https://img.shields.io/badge/transformers-4.36-yellow.svg)
 [![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
 
 
