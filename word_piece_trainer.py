@@ -26,7 +26,7 @@ class TokenizerTrainer(ABC):
     def __init__(self, tokenizer_name: str) -> None:
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
 
-    def train(self, data_dir: str, batch_size: int, vocab_size: int, save: bool, save_fp: str) -> None:
+    def train(self, data_dir: str, batch_size: int, vocab_size: int, save_fp: str) -> None:
         """
         Train the tokenizer on a new corpus.
 
@@ -34,14 +34,12 @@ class TokenizerTrainer(ABC):
             data_dir (str): Corpus directory path.
             batch_size (int): Batch size for reading files.
             vocab_size (int): Target vocabulary size.
-            save (bool): Whether to save the adapted tokenizer.
             save_fp (str): File path to save the tokenizer.
 
         """
         training_corpus = self.read_batch_of_files(data_dir, batch_size)
         self.tokenizer = self.tokenizer.train_new_from_iterator(training_corpus, vocab_size)
-        if save:
-            self.save(save_fp)
+        self.save(save_fp)
 
     def read_batch_of_files(self, data_dir: str, batch_size: int) -> Iterator[List[str]]:
         """
@@ -119,19 +117,21 @@ class WordPieceTrainer(TokenizerTrainer):
     """
     def get_filenames(self, data_dir: str) -> List[str]:
         """
-        Get a list of filenames in a directory.
+        Retrieves a list of filenames from the 'neg' and 'pos' directories within the 'train' and 'test' directories.
 
         Args:
-            data_dir (str): Directory path.
+            data_dir (str): The top-level directory containing the data files.
 
         Returns:
-            list: List of filenames.
-
+            list: List of file paths.
         """
         filenames = []
+
         for root, dirs, files in os.walk(data_dir):
-            for file in files:
-                filenames.append(os.path.join(root, file))
+            if os.path.basename(root) in ['neg', 'pos'] and os.path.basename(os.path.dirname(root)) in ['train', 'test']:
+                for file in files:
+                    filepath = os.path.join(root, file)
+                    filenames.append(filepath)
         return filenames
 
     def read_file(self, filename: str) -> str:
@@ -154,15 +154,13 @@ def main():
     parser.add_argument("--tokenizer_name", type=str, default="bert-base-cased", help="Name of the pretrained tokenizer.")
     parser.add_argument("--data_dir", type=str, default="aclImdb", help="Directory containing the training data.")
     parser.add_argument("--batch_size", type=int, default=1000, help="Batch size for reading files.")
-    parser.add_argument("--vocab_size", type=int, default=30622, help="Target vocabulary size.")
-    parser.add_argument("--save", action="store_true", help="Whether to save the adapted tokenizer.")
+    parser.add_argument("--vocab_size", type=int, default=30522, help="Target vocabulary size.")
     parser.add_argument("--save_fp", type=str, default="tokenizer/adapted-tokenizer", help="File path to save the tokenizer.")
-    
+
     args = parser.parse_args()
 
     wp_trainer = WordPieceTrainer(tokenizer_name=args.tokenizer_name)
-    wp_trainer.train(data_dir=args.data_dir, batch_size=args.batch_size, vocab_size=args.vocab_size, save=args.save, save_fp=args.save_fp)
+    wp_trainer.train(data_dir=args.data_dir, batch_size=args.batch_size, vocab_size=args.vocab_size, save_fp=args.save_fp)
 
 if __name__ == "__main__":
     main()
-
