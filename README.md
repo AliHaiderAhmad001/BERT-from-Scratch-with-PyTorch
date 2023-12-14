@@ -5,7 +5,8 @@ BERT, which stands for "Bidirectional Encoder Representations from Transformers,
 
 ---
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](https://opensource.org/licenses/MIT)
+[![Platform](https://img.shields.io/badge/Platform-Ubuntu-orange.svg)](https://www.ubuntu.com/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.1-red.svg)](https://pytorch.org/)
 ![Transformers](https://img.shields.io/badge/transformers-4.36-yellow.svg)
 [![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
