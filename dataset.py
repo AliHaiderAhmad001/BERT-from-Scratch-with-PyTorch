@@ -154,17 +154,17 @@ class CustomTextDataset(Dataset):
             sent_A, label_A = self.mask_sentence(sent_A)
             sent_B, label_B = self.mask_sentence(sent_B)
 
-            bert_label = ([PAD_TOKEN] + label_A + [PAD_TOKEN] + label_B) + [PAD_TOKEN]
+            bert_label = ([CustomTextDataset.PAD_TOKEN] + label_A + [CustomTextDataset.PAD_TOKEN] + label_B) + [CustomTextDataset.PAD_TOKEN]
 
-            sent_A = [CLS_TOKEN] + sent_A + [SEP_TOKEN]
-            sent_B = sent_B + [SEP_TOKEN]
+            sent_A = [CustomTextDataset.CLS_TOKEN] + sent_A + [CustomTextDataset.SEP_TOKEN]
+            sent_B = sent_B + [CustomTextDataset.SEP_TOKEN]
 
             segment_label = [1 for _ in range(len(sent_A))] + [2 for _ in range(len(sent_B))]
 
             sequence = sent_A + sent_B
 
-            padding = [PAD_TOKEN for _ in range(self.seq_len - len(sequence))]
-            sequence.extend(padding), bert_label.extend(padding), segment_label.extend([PAD_IDX] * len(padding))
+            padding = [CustomTextDataset.PAD_TOKEN for _ in range(self.seq_len - len(sequence))]
+            sequence.extend(padding), bert_label.extend(padding), segment_label.extend([CustomTextDataset.PAD_IDX] * len(padding))
 
             bert_input = self.tokenizer.convert_to_ids(sequence)
             bert_label = self.tokenizer.convert_to_ids(bert_label)
@@ -251,7 +251,7 @@ class CustomTextDataset(Dataset):
         num_masked = ceil(self.prop * len(tokens))
         masked_indices = rd.sample(range(len(tokens)), num_masked)
 
-        target_sequence = [PAD_TOKEN] * len(tokens)
+        target_sequence = [CustomTextDataset.PAD_TOKEN] * len(tokens)
 
         for idx in masked_indices:
             target_sequence[idx] = tokens[idx]
@@ -259,11 +259,11 @@ class CustomTextDataset(Dataset):
             p = rd.random()
 
             if p < 0.8:
-                tokens[idx] = MASK_TOKEN
+                tokens[idx] = CustomTextDataset.MASK_TOKEN
 
                 next_idx = idx + 1
                 while next_idx < len(tokens) and tokens[next_idx].startswith("##"):
-                    tokens[next_idx] = MASK_TOKEN
+                    tokens[next_idx] = CustomTextDataset.MASK_TOKEN
                     target_sequence[next_idx] = tokens[next_idx]
                     next_idx += 1
             elif p <= 0.5:
