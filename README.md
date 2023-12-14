@@ -14,7 +14,7 @@ BERT, which stands for "Bidirectional Encoder Representations from Transformers,
 
 ## Project Overview
 
-Welcome to "BERTvolution-Building-BERT-from-Scratch"! This project is an ambitious endeavor to create a BERT model from scratch using PyTorch. My goal is to provide an in-depth and comprehensive resource that helps enthusiasts, researchers, and learners gain a precise understanding of BERT, from its fundamental concepts to the implementation details.
+Welcome to "BERT-from-Scratch-with-PyTorch"! This project is an ambitious endeavor to create a BERT model from scratch using PyTorch. My goal is to provide an in-depth and comprehensive resource that helps enthusiasts, researchers, and learners gain a precise understanding of BERT, from its fundamental concepts to the implementation details.
 
 **Project Objectives**
 
