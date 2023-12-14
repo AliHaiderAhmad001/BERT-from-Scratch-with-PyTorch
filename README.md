@@ -45,6 +45,44 @@ To get started with building BERT from scratch, you must have a comprehensive un
 You can read the full explanation of all components in [Demo](https://github.com/AliHaiderAhmad001/BERT-from-Scratch-with-PyTorch/tree/main/demo).
 
 ## Usage
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/AliHaiderAhmad001/BERT-from-Scratch-with-PyTorch.git
+   cd BERT-from-Scratch-with-PyTorch
+   ```
+
+2. Create a virtual environment (optional but recommended):
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. Install project dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Download and prepare Dataset: You can go and review the demo.You can work on the same dataset, change it or adjust your preferences. However, You can download the dataset directly from [here](https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz).
+
+```bash
+cd 'datasets'
+curl -O https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz
+tar -xf aclImdb_v1.tar.gz
+cd ..
+```
+   
+6. Optionally, you can re-train  WordPiece tokenizer:
+   ```bash
+   python word_piece_trainer.py --tokenizer_name bert-base-cased --data_dir aclImdb --batch_size 1000 --vocab_size 30522 --save_fp tokenizer/adapted-tokenizer
+   ```
+7. Train the BERT model:
+   ```bash
+    python run.py --prop 0.15 --tokenizer_path bert-base-uncased --seq_len 512 --delimiters ".,;:!? " --lower_case True --buffer_size 1 --shuffle True --data_dir 'datasets/aclImdb' --hidden_size 768 --vocab_size 30522 --hidden_dropout_prob 0.1 --num_heads 8 --num_blocks 12 --final_dropout_prob 0.5 --n_warmup_steps 10000 --weight_decay 0.01 --lr 1e-4 --betas 0.9 0.999 --with_cuda True --log_freq 10 --batch_size 64 --save_path 'tmp' --seed 2023 --epochs 10
+
+   ```
+   
 
 ## Contributing
 
