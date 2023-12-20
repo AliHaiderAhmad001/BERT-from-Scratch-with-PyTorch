@@ -20,7 +20,6 @@ class Embeddings(nn.Module):
         positional_embeddings (PositionalEmbeddings): Positional Embeddings layer.
         segment_embeddings (nn.Embedding): Segment embedding layer.
         dropout (nn.Dropout): Dropout layer for regularization.
-        norm (nn.LayerNorm): Layer normalization for normalization.
     """
 
     def __init__(self, config):
@@ -47,7 +46,6 @@ class Embeddings(nn.Module):
         )
         self.positional_embeddings: PositionalEmbeddings = PositionalEmbeddings(config)
         self.dropout: nn.Dropout = nn.Dropout(self.hidden_dropout_prob)
-        self.norm: nn.LayerNorm = nn.LayerNorm(self.hidden_size, eps=1e-12)
 
     def forward(self, input_ids: torch.Tensor, segment_ids: torch.Tensor, training: bool = False) -> torch.Tensor:
         """
@@ -65,7 +63,6 @@ class Embeddings(nn.Module):
         seg_info: torch.Tensor = self.segment_embeddings(segment_ids)
         x: torch.Tensor = self.token_embeddings(input_ids)
         x: torch.Tensor = x + pos_info + seg_info
-        x: torch.Tensor = self.norm(x)
         if training:
             x: torch.Tensor = self.dropout(x)
         return x
