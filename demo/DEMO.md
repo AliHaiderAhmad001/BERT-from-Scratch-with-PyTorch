@@ -960,6 +960,7 @@ In general, there are some modifications from the 2017 Transformers model, which
 *We only need the Encoder. We do not use the decoder in BERT.
 * We need to modify the Embeddings layer, as we are adding the Segmentation embeds.
 * We also need to add a second head to the final model, for the NSP task.
+* We use **pre layer normalization** instead of **post layer normalization**.
 
 ### Embeddings
 
