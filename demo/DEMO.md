@@ -1039,7 +1039,6 @@ class Embeddings(nn.Module):
         positional_embeddings (PositionalEmbeddings): Positional Embeddings layer.
         segment_embeddings (nn.Embedding): Segment embedding layer.
         dropout (nn.Dropout): Dropout layer for regularization.
-        norm (nn.LayerNorm): Layer normalization for normalization.
     """
 
     def __init__(self, config):
@@ -1066,7 +1065,6 @@ class Embeddings(nn.Module):
         )
         self.positional_embeddings: PositionalEmbeddings = PositionalEmbeddings(config)
         self.dropout: nn.Dropout = nn.Dropout(self.hidden_dropout_prob)
-        self.norm: nn.LayerNorm = nn.LayerNorm(self.hidden_size, eps=1e-12)
 
     def forward(self, input_ids: torch.Tensor, segment_ids: torch.Tensor, training: bool = False) -> torch.Tensor:
         """
@@ -1084,7 +1082,6 @@ class Embeddings(nn.Module):
         seg_info: torch.Tensor = self.segment_embeddings(segment_ids)
         x: torch.Tensor = self.token_embeddings(input_ids)
         x: torch.Tensor = x + pos_info + seg_info
-        x: torch.Tensor = self.norm(x)
         if training:
             x: torch.Tensor = self.dropout(x)
         return x
@@ -1293,12 +1290,13 @@ class FeedForward(nn.Module):
 ```
 
 #### Encoder layer
+Here we use **pre layer normalization**. This is the most common arrangement found in the literature; it places layer normalization within the span of the skip connections. This tends to be much more stable during training. Vaswani paper 2017 used **post layer normalization**.
 
 ```
 import torch
 import torch.nn as nn
-#from attention import MultiHeadAttention
-#from feed_forward import FeedForward
+from attention import MultiHeadAttention
+from feed_forward import FeedForward
 
 class Encoder(nn.Module):
     """
@@ -1333,8 +1331,8 @@ class Encoder(nn.Module):
         self.hidden_size: int = config.hidden_size
         self.hidden_dropout_prob: float = config.hidden_dropout_prob
         self.multihead_attention: MultiHeadAttention = MultiHeadAttention(config)
-        self.norm1: nn.LayerNorm = nn.LayerNorm(self.hidden_size)
-        self.norm2: nn.LayerNorm = nn.LayerNorm(self.hidden_size)
+        self.norm1: nn.LayerNorm = nn.LayerNorm(self.hidden_size, eps=1e-6)
+        self.norm2: nn.LayerNorm = nn.LayerNorm(self.hidden_size, eps=1e-6)
         self.feed_forward: FeedForward = FeedForward(config)
         self.dropout: nn.Dropout = nn.Dropout(self.hidden_dropout_prob)
 
@@ -1350,13 +1348,14 @@ class Encoder(nn.Module):
         Returns:
             torch.Tensor: Updated hidden state after applying the encoder layer.
         """
-
-        attention_output: torch.Tensor = self.multihead_attention(hidden_state, hidden_state, hidden_state, mask)  # Apply multi-head attention
-        hidden_state: torch.Tensor = self.norm1(attention_output + hidden_state)  # Add skip connection and normalize
-        feed_forward_output: torch.Tensor = self.feed_forward(hidden_state)  # Apply feed-forward layer
-        hidden_state: torch.Tensor = self.norm2(feed_forward_output + hidden_state)  # Add skip connection and normalize
+        x_norm1: torch.Tensor = self.norm1(hidden_state)
+        attention_output: torch.Tensor = self.multihead_attention(x_norm, x_norm, x_norm, mask)
+        hidden_state: torch.Tensor = attention_output + hidden_state
+        x_norm2: torch.Tensor = self.norm2(hidden_state)
+        feed_forward_output: torch.Tensor = self.feed_forward(x_norm2)
+        x_enc: torch.Tensor = feed_forward_output + x_norm2
         if training:
-            hidden_state: torch.Tensor = self.dropout(hidden_state)
+            hidden_state: torch.Tensor = self.dropout(x_enc)
         return hidden_state
 ```
 
