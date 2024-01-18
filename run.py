@@ -1,12 +1,12 @@
 import torch
 from torch.optim import Adam
 from torch.utils.data import DataLoader
-#from scheduled_optim import ScheduledOptim
+from scheduled_optim import ScheduledOptim
 import random as rd
 import numpy as np
 import argparse
-#from dataset import CustomTextDataset
-#from bert_trainer import BERTTrainer
+from dataset import CustomTextDataset
+from bert_trainer import BERTTrainer
 
 
 def parse_args():
