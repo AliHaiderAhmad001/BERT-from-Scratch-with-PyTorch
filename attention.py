@@ -31,7 +31,7 @@ class AttentionHead(nn.Module):
         self.value_weights: nn.Linear = nn.Linear(hidden_size, head_dim)
         self.dropout = nn.Dropout(0.1)
 
-    def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, mask: torch.Tensor = None) -> torch.Tensor:
+    def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, mask: torch.Tensor = None, training:bool = False) -> torch.Tensor:
         """
         Applies attention mechanism to the input query, key, and value tensors.
 
@@ -96,7 +96,7 @@ class MultiHeadAttention(nn.Module):
         self.attention_heads: nn.ModuleList = nn.ModuleList([AttentionHead(self.hidden_size, self.head_dim) for _ in range(self.num_heads)])
         self.fc: nn.Linear = nn.Linear(config.hidden_size, config.hidden_size)
 
-    def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, mask: torch.Tensor = None) -> torch.Tensor:
+    def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, mask: torch.Tensor = None, training:bool = False) -> torch.Tensor:
         """
         Applies multi-head attention mechanism to the input query, key, and value tensors.
 
@@ -109,7 +109,7 @@ class MultiHeadAttention(nn.Module):
         Returns:
             torch.Tensor: Updated hidden state after applying multi-head attention mechanism.
         """
-        attention_outputs: List[torch.Tensor] = [attention_head(query, key, value, mask=mask) for attention_head in self.attention_heads]
+        attention_outputs: List[torch.Tensor] = [attention_head(query, key, value, mask=mask, training = training) for attention_head in self.attention_heads]
         hidden_state: torch.Tensor = torch.cat(attention_outputs, dim=-1)
         hidden_state: torch.Tensor = self.fc(hidden_state)
         return hidden_state
