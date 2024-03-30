@@ -11,7 +11,6 @@ class BERT(nn.Module):
         config (object): Configuration object containing hyperparameters.
             - num_blocks (int): Number of encoder blocks.
             - vocab_size (int): Size of the vocabulary.
-            - final_dropout_prob (float): Dropout probability for the final layer.
             - d_model (int): Dimensionality of the model's hidden layers.
             - hidden_size (int): Size of the hidden embeddings.
 
@@ -36,7 +35,6 @@ class BERT(nn.Module):
 
         self.num_blocks: int = config.num_blocks
         self.vocab_size: int = config.vocab_size
-        self.final_dropout_prob: float = config.final_dropout_prob
         self.hidden_size: int = config.hidden_size
 
         self.embed_layer: Embeddings = Embeddings(config)
