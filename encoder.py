@@ -54,12 +54,13 @@ class Encoder(nn.Module):
             torch.Tensor: Updated hidden state after applying the encoder layer.
         """
         x_norm1: torch.Tensor = self.norm1(hidden_state)
-        attention_output: torch.Tensor = self.multihead_attention(x_norm, x_norm, x_norm, mask)
+        attention_output: torch.Tensor = self.multihead_attention(x_norm1, x_norm1, x_norm1, mask, training)
         hidden_state: torch.Tensor = attention_output + hidden_state
+        
         x_norm2: torch.Tensor = self.norm2(hidden_state)
         feed_forward_output: torch.Tensor = self.feed_forward(x_norm2)
-        x_enc: torch.Tensor = feed_forward_output + x_norm2
-        if training:
-            hidden_state: torch.Tensor = self.dropout(x_enc)
+        x_enc: torch.Tensor = feed_forward_output + hidden_state
+        hidden_state: torch.Tensor = self.dropout(x_enc, training = training)
+        
         return hidden_state
 
