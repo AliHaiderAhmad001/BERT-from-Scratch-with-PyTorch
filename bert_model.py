@@ -21,7 +21,6 @@ class BERT(nn.Module):
         hidden_size (int): Size of the hidden embeddings.
         embed_layer (Embeddings): Embeddings layer.
         encoder (nn.ModuleList): List of encoder layers.
-        dropout (nn.Dropout): Dropout layer for regularization.
         mlm_prediction_layer (nn.Linear): Masked Language Model (MLM) prediction layer.
         nsp_classifier (nn.Linear): Next Sentence Prediction (NSP) classifier layer.
         softmax (nn.LogSoftmax): LogSoftmax layer for probability computation.
