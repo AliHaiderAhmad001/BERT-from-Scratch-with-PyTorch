@@ -41,7 +41,6 @@ class BERT(nn.Module):
 
         self.embed_layer: Embeddings = Embeddings(config)
         self.encoder: nn.ModuleList = nn.ModuleList([Encoder(config) for _ in range(self.num_blocks)])
-        self.dropout: nn.Dropout = nn.Dropout(self.final_dropout_prob)
         self.mlm_prediction_layer: nn.Linear = nn.Linear(self.hidden_size, self.vocab_size)
         self.nsp_classifier: nn.Linear = nn.Linear(self.hidden_size, 2)
         self.softmax: nn.LogSoftmax = nn.LogSoftmax(dim=-1)
@@ -63,9 +62,6 @@ class BERT(nn.Module):
 
         for encoder_layer in self.encoder:
             x_enc: torch.Tensor = encoder_layer(x_enc, mask, training=training)
-
-        if training:
-            x_enc: torch.Tensor = self.dropout(x_enc)
 
         mlm_logits: torch.Tensor = self.mlm_prediction_layer(x_enc)
         nsp_logits: torch.Tensor = self.nsp_classifier(x_enc[:, 0, :])
