@@ -52,8 +52,8 @@ class FeedForward(nn.Module):
         """
         hidden_state: torch.Tensor = self.fc1(hidden_state)
         hidden_state: torch.Tensor = F.gelu(hidden_state)
+        hidden_state: torch.Tensor = self.dropout(hidden_state, training=training)
         hidden_state: torch.Tensor = self.fc2(hidden_state)
-        if training:
-            hidden_state: torch.Tensor = self.dropout(hidden_state)
+        
         return hidden_state
 
