@@ -16,7 +16,12 @@ BERT, which stands for "Bidirectional Encoder Representations from Transformers,
 
 Welcome to "BERT-from-Scratch-with-PyTorch"! This project is an ambitious endeavor to create a BERT model from scratch using PyTorch. My goal is to provide an in-depth and comprehensive resource that helps enthusiasts, researchers, and learners gain a precise understanding of BERT, from its fundamental concepts to the implementation details.
 
-**Important Note:** The goal of this project is to provide a deep understanding of the BERT architecture and its inner workings. So, it's mainly for educational purposes. You can fully understand the structure and working mechanism of this model here, and use the components I have implemented in your projects. Generally, if you want to use the project to train your language model with big data, you may need to modify the dataset file to be able to process big data more efficiently. I designed the dataset file mainly to handle simple, not large, data, because I am not in this regard now.
+## Limitations
+
+The goal of this project is to provide a deep understanding of the BERT architecture and its inner workings. So, it's mainly for educational purposes. You can fully understand the structure and working mechanism of this model here, and use the components I have implemented in your projects. Generally, if you want to use the project to train your language model with big data, you may need to modify the dataset file to be able to process big data more efficiently. I designed the dataset file mainly to handle simple, not large, data, because I am not in this regard now.
+
+This codebase is set up for model pre-training. To use this implementation for fine-tuning on specific tasks, further modifications may be required.
+
 
 **Project Objectives**
 
