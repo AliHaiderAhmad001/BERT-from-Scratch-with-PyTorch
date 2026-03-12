@@ -2,7 +2,6 @@
 
 BERT, which stands for "Bidirectional Encoder Representations from Transformers," is a groundbreaking natural language processing (NLP) model that has had a profound impact on a wide range of NLP tasks. It was introduced by researchers at Google AI in their paper titled "[BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/pdf/1810.04805.pdf)" in 2018.
 
-
 ---
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](https://opensource.org/licenses/MIT)
