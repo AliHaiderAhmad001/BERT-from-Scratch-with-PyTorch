@@ -1,1 +1,1 @@
-pip install transformers
+transformers
